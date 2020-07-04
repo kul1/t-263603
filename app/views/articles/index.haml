@@ -1,0 +1,25 @@
+- @title= "All Articles"
+= paginate @articles
+%div{"data-role" => "content", "data-id" => "article-index"}
+  %form.ui-filterable
+    %ul{"data-role" => "listview", "data-theme" => "a", "data-filter" => "true", "data-inset" => "false", "data-autodividers" => "true"}
+    - @articles.each do |article|
+      %li{ "data-divider-theme" => "e" }
+        = article.created_at
+      %li= article.user.code if article.user
+      %li
+        %a{:controller=> "articles", :action => "show", :article_id => article.id} 
+          %h2
+            = article.title
+      %li
+        %p
+          = article.text
+      %li
+        %p.ui-li-aside
+          = article.updated_at
+      %li(align='center')
+        - next unless login?
+        - unless current_ma_user.role.upcase.split(',').include?("A")
+          - next unless article.user
+          - next unless current_ma_user == article.user
+        = link_to image_tag('delete.png', style:'border:none; float:none;'), {controller: "articles", action: "destroy",  article_id: article.id}, data: { confirm: "Please Confirm" }
